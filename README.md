@@ -20,7 +20,7 @@ Deployment
 ----------
 Below are some main steps for building and deploying these auto clustering rabbitmq containers in ECS; adjust as you see fit.
 
-- Build and push the container to the registry (ECR).
+- Build & push the container to the registry (ECR).
 
 ```
     aws ecr get-login --region us-east-1
