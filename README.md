@@ -26,13 +26,13 @@ Below are some main steps for building and deploying these auto clustering rabbi
     aws ecr get-login --region us-east-1
     cd <path-to>/rabbitmq-ecs-autoclustering/docker-image
     docker build -t arnaud/rabbitmq-asg-autocluster .
-    docker tag arnaud/rabbitmq-asg-autocluster:latest 761145510729.dkr.ecr.us-east-1.amazonaws.com/arnaud/rabbitmq-asg-autocluster:latest
+    docker tag arnaud/rabbitmq-asg-autocluster:latest ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/arnaud/rabbitmq-asg-autocluster:latest
 
 ```
 
-Here is a sample AWS TaskDefinition for running these 
+Here is a sample AWS ECS Task & Sevice definitions for running these containers. Modify as necessary and set relevant values for any of the AWS Cloudformation Parameters - i.e. QueueUser, QueuePass, etc. 
 
-
+```
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -54,17 +54,17 @@ Here is a sample AWS TaskDefinition for running these
         Memory: !Ref 'RabbitHardMemoryLimit'
         MemoryReservation: !Ref 'RabbitSoftMemoryLimit'
         PortMappings:
-        - HostPort: !Ref 'ContainerPort1'
-          ContainerPort: !Ref 'ContainerPort1'
+        - HostPort: 5672
+          ContainerPort: 5672
           Protocol: tcp
-        - HostPort: !Ref 'ContainerPort2'
-          ContainerPort: !Ref 'ContainerPort2'
+        - HostPort: !Ref 15672
+          ContainerPort: 15672
           Protocol: tcp
-        - HostPort: !Ref 'ContainerPort3'
-          ContainerPort: !Ref 'ContainerPort3'
+        - HostPort: 4369
+          ContainerPort: 4369
           Protocol: tcp
-        - HostPort: !Ref 'ContainerPort4'
-          ContainerPort: !Ref 'ContainerPort4'
+        - HostPort: 25672
+          ContainerPort: 25672
           Protocol: tcp
         Environment:
         - Name: RABBITMQ_DEFAULT_VHOST
@@ -74,27 +74,18 @@ Here is a sample AWS TaskDefinition for running these
         - Name: RABBITMQ_DEFAULT_PASS
           Value: !Ref 'QueuePass'
         - Name: RABBITMQ_DEFAULT_PORT
-          Value: !Ref 'ContainerPort1'
+          Value: 5672
         - Name: RABBITMQ_VM_MEMORY_HIGH_WATERMARK
-          Value: !Ref 'HighMemoryWaterMark'
-        - Name: MEMORY
-          Value: !Ref 'RabbitHardMemoryLimit'
-        - Name: MEMORY_RESERVATION
-          Value: !Ref 'RabbitSoftMemoryLimit'
-        - Name: STAGE
-          Value: !Ref 'Stage'
-        - Name: COMPONENT
-          Value: !Ref 'Component'
+          Value: 0.85
         - Name: AWS_DEFAULT_REGION
           Value: !Ref 'AWS::Region'
         - Name: AWS_ASG_AUTOCLUSTER
           Value: 'true'
+        # using a random erlang cookie
         - Name: RABBITMQ_ERLANG_COOKIE
           Value: 'ALWEDHDBZTQYWTJGTXWV'
         - Name: RABBITMQ_QUEUE_MASTER_LOCATOR
-          Value: !Ref 'RabbitQueueMasterLocator'
-        - Name: AWS_DEFAULT_REGION
-          Value: 'us-east-1'        
+          Value: min-masters       
         LogConfiguration:
           LogDriver: awslogs
           Options:
@@ -108,12 +99,12 @@ Here is a sample AWS TaskDefinition for running these
           SoftLimit: 10240
           HardLimit: 32768
   Service:
-    Type: Custom::Service
+    Type: AWS::ECS::Service
     Properties:
       ServiceToken: !Ref 'ServiceDefinitionServiceToken'
       ServiceName: !Ref 'AWS::StackName'
       Cluster: !Ref 'Cluster'
-      DesiredCount: !Ref 'DesiredCount'
+      DesiredCount: 3
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 66
@@ -123,7 +114,7 @@ Here is a sample AWS TaskDefinition for running these
       PlacementStrategy:
       - type: spread
         field: attribute:ecs.availability-zone
-
+```
     
 
 
