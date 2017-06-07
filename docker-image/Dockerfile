@@ -81,14 +81,11 @@ RUN ln -sf /usr/lib/rabbitmq/lib/rabbitmq_server-$RABBITMQ_VERSION/plugins /plug
 RUN apt-get update && apt-get install -y python python-pip python-dev build-essential vim \
 	&& pip install pika
 
-COPY create_rabbitmq_queues.py /opt/
-COPY mailqueue_qlist.csv /opt/
-
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
 RUN rabbitmq-plugins enable --offline rabbitmq_management
 
-
+# add ASG auto clustering tool
 COPY rabbitmq_asg_autocluster.py /opt/
 RUN chmod 755 /opt/rabbitmq_asg_autocluster.py
 
