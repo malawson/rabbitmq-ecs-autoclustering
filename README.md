@@ -61,7 +61,7 @@ Make sure the IAM policy for the ECS instances include these: "autoscaling:Descr
 ```
 - Deploy the containers in ECS
 
-Here is a sample AWS ECS Task & Sevice definitions in YAML syntax for running these containers. Modify as necessary and set relevant values for any of the AWS Cloudformation Parameters - i.e. QueueUser, QueuePass, etc. 
+Here are sample AWS ECS Task & Sevice definitions in YAML syntax for running these containers. Modify as necessary and set relevant values for any of the AWS Cloudformation Parameters - i.e. QueueUser, QueuePass, etc. 
 
 ```
   TaskDefinition:
