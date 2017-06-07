@@ -46,7 +46,7 @@ Here is a sample AWS ECS Task & Sevice definitions for running these containers.
       NetworkMode: 'host'
       ContainerDefinitions:
       - Name: rabbit
-        Image: !Ref 'AppImageTag'
+        Image: ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/arnaud/rabbitmq-asg-autocluster:latest
         MountPoints:
         - SourceVolume: rabbitmq-database
           ContainerPath: /var/lib/rabbitmq
