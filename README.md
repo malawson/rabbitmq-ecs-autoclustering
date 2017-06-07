@@ -1,7 +1,7 @@
 Rabbitmq Auto Clustering in Amazon EC2 Container Service
 ========================================================
 
-Automation of Rabbitmq clustering in Amazon EC2 Container Service based on AWS Auto Scaling group membership.
+Automation of Rabbitmq clustering in Amazon EC2 Container Service based on AWS Auto Scaling group membership. This has been tested with small to medium size rabbitmq clusters. For example a cluster of 3 nodes would be able to withstand up to 2 node failures; meaning if 2 ECS instances/tasks were to die they would be replaced by new instances/tasks (based on the desired count of 3 set for the Auto Scaling group or the ECS service) and these new nodes will rejoin the existing cluster. All of the code for handling cluter formation and recovery is in docker-image/rabbitmq_asg_autocluster.py
 
 **Requirements:**
 
