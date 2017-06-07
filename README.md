@@ -7,7 +7,7 @@ Automation of Rabbitmq clustering in Amazon EC2 Container Service based on AWS A
 
 - the rabbitmq cluster is deployed within a single AWS Auto Scaling group
 - only run one rabbitmq container per ECS instance and deploy odd numbers of rabbitmq instance i.e. 3, 5, 7, etc ([Rabbitmq Clustering Guide](https://www.rabbitmq.com/clustering.html),)
-- use the 'host' docker networking mode when running the containers to cause them to inherit the private short dns names of the ECS instances as their hostnames this way rabbitmq
+- use the 'host' docker networking mode when running the containers to cause them to inherit the private short dns names of the ECS instances as their hostnames; this way rabbitmq
 uses these DNS names for node discovery during the clustering process
 - the ECS instances must be assigned the following IAM policies:
 "autoscaling:DescribeAutoScalingInstances",
@@ -20,6 +20,35 @@ Deployment
 ----------
 Below are some main steps for building and deploying these auto clustering rabbitmq containers in ECS; adjust as you see fit.
 
+- IAM Policy for ECS Instances
+Make sure the IAM policy for the ECS instances include these: "autoscaling:DescribeAutoScalingInstances", "autoscaling:DescribeAutoScalingGroups", "ec2:DescribeInstances"
+
+```
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ec2.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+      - PolicyName: Rabbitmq-ECS-Auto-Clustering
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action: ['autoscaling:DescribeAutoScalingInstances', 'autoscaling:DescribeAutoScalingGroups', 'ec2:DescribeInstances]
+            Resource: '*'
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles: [!Ref 'InstanceRole']
+```
+
+
 - Build & push the container to the registry (ECR).
 
 ```
@@ -31,7 +60,7 @@ Below are some main steps for building and deploying these auto clustering rabbi
 ```
 - Deploy the containers in ECS
 
-Here is a sample AWS ECS Task & Sevice definitions for running these containers. Modify as necessary and set relevant values for any of the AWS Cloudformation Parameters - i.e. QueueUser, QueuePass, etc. 
+Here is a sample AWS ECS Task & Sevice definitions in YAML syntax for running these containers. Modify as necessary and set relevant values for any of the AWS Cloudformation Parameters - i.e. QueueUser, QueuePass, etc. 
 
 ```
   TaskDefinition:
