@@ -6,7 +6,7 @@ Automation of Rabbitmq clustering in Amazon EC2 Container Service based on AWS A
 **Requirements:**
 
 - the rabbitmq cluster is deployed within a single AWS Auto Scaling group
-- only run one rabbitmq container per ECS instance and deploy odd numbers of rabbitmq instance i.e. 3, 5, 7, etc
+- only run one rabbitmq container per ECS instance and deploy odd numbers of rabbitmq instance i.e. 3, 5, 7, etc ([Rabbitmq Clustering Guide](https://www.rabbitmq.com/clustering.html),)
 - use the 'host' docker networking mode when running the containers to cause them to inherit the private short dns names of the ECS instances as their hostnames this way rabbitmq
 uses these DNS names for node discovery during the clustering process
 - the ECS instances must be assigned the following IAM policies:
@@ -29,6 +29,7 @@ Below are some main steps for building and deploying these auto clustering rabbi
     docker tag arnaud/rabbitmq-asg-autocluster:latest ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/arnaud/rabbitmq-asg-autocluster:latest
 
 ```
+- Deploy the containers in ECS
 
 Here is a sample AWS ECS Task & Sevice definitions for running these containers. Modify as necessary and set relevant values for any of the AWS Cloudformation Parameters - i.e. QueueUser, QueuePass, etc. 
 
