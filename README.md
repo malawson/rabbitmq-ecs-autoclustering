@@ -22,13 +22,13 @@ Below are some main steps for building and deploying these auto clustering rabbi
 
 - Build and push the container to the registry (ECR).
 
-    ```
-        aws ecr get-login --region us-east-1
-        cd <path-to>/rabbitmq-ecs-autoclustering/docker-image
-        docker build -t arnaud/rabbitmq-asg-autocluster .
-        docker tag arnaud/rabbitmq-asg-autocluster:latest 761145510729.dkr.ecr.us-east-1.amazonaws.com/arnaud/rabbitmq-asg-autocluster:latest
+```
+    aws ecr get-login --region us-east-1
+    cd <path-to>/rabbitmq-ecs-autoclustering/docker-image
+    docker build -t arnaud/rabbitmq-asg-autocluster .
+    docker tag arnaud/rabbitmq-asg-autocluster:latest 761145510729.dkr.ecr.us-east-1.amazonaws.com/arnaud/rabbitmq-asg-autocluster:latest
 
-    ```
+```
 
 Here is a sample AWS TaskDefinition for running these 
 
