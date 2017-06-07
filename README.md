@@ -21,6 +21,7 @@ Deployment
 Below are some main steps for building and deploying these auto clustering rabbitmq containers in ECS; adjust as you see fit.
 
 - IAM Policy for ECS Instances
+
 Make sure the IAM policy for the ECS instances include these: "autoscaling:DescribeAutoScalingInstances", "autoscaling:DescribeAutoScalingGroups", "ec2:DescribeInstances"
 
 ```
