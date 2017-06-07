@@ -115,28 +115,3 @@ Here is a sample AWS ECS Task & Sevice definitions for running these containers.
       - type: spread
         field: attribute:ecs.availability-zone
 ```
-    
-
-
-
-  sets:
-    rabbit-autocluster:
-      service:
-        cf_template: cf/rabbitmq-autocluster/service.cfn.yaml
-        secrets:
-          QueuePass: rabbit.default.pass
-        params:
-          ContainerPort1    : 5672
-          ContainerPort2    : 15672
-          ContainerPort3    : 4369
-          ContainerPort4    : 25672
-          RabbitHardMemoryLimit: 3600
-          RabbitSoftMemoryLimit: 500
-          RabbitErlangCookie: ALWEDHDBZTQYWTJGTXWV
-          RabbitQueueMasterLocator: min-masters
-          #AppImageTag : {{ECR_ROOT}}/gavinmroy/alpine-rabbitmq-autocluster
-          AppImageTag : 761145510729.dkr.ecr.us-east-1.amazonaws.com/arnaud/rabbitmq-asg-autocluster
-          QueueVHost : /hbase
-          HighMemoryWaterMark : 0.8
-          QueueUser  : meetup
-          DesiredCount      : 3
