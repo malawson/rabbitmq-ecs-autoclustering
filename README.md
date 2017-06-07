@@ -1,12 +1,12 @@
 Rabbitmq Auto Clustering in Amazon EC2 Container Service
 ========================================================
 
-Automation of Rabbitmq clustering in Amazon EC2 Container Service based on AWS Auto Scaling group membership. This has been tested with small to medium size rabbitmq clusters, and is essentially using the rabbitmq docker image from [upstream](https://github.com/docker-library/rabbitmq/blob/4761fd0c03b8ca4e81967019e564d0659e4b7b74/3.6/debian/Dockerfile),). For example a cluster of 3 nodes would be able to withstand up to 2 node failures; meaning if 2 ECS instances/tasks were to die they would be replaced by new instances/tasks (based on the desired count of 3 set for the Auto Scaling group or the ECS service) and these new nodes will rejoin the existing cluster. All of the code for handling cluter formation and recovery is in docker-image/rabbitmq_asg_autocluster.py
+Automation of Rabbitmq clustering in Amazon EC2 Container Service based on AWS Auto Scaling group membership. This has been tested with small to medium size rabbitmq clusters, and is essentially using the rabbitmq docker image from [upstream](https://github.com/docker-library/rabbitmq/blob/4761fd0c03b8ca4e81967019e564d0659e4b7b74/3.6/debian/Dockerfile). For example a cluster of 3 nodes would be able to withstand up to 2 node failures; meaning if 2 ECS instances/tasks were to die they would be replaced by new instances/tasks (based on the desired count of 3 set for the Auto Scaling group or the ECS service) and these new nodes will rejoin the existing cluster. All of the code for handling cluter formation and recovery is in docker-image/rabbitmq_asg_autocluster.py
 
 **Requirements:**
 
 - the rabbitmq cluster is deployed within a single AWS Auto Scaling group
-- only run one rabbitmq container per ECS instance and deploy odd numbers of rabbitmq instance i.e. 3, 5, 7, etc ([More On Rabbitmq Clustering](https://www.rabbitmq.com/clustering.html),)
+- only run one rabbitmq container per ECS instance and deploy odd numbers of rabbitmq instance i.e. 3, 5, 7, etc ([More On Rabbitmq Clustering](https://www.rabbitmq.com/clustering.html)
 - use the 'host' docker networking mode when running the containers to cause them to inherit the private short dns names of the ECS instances as their hostnames; this way rabbitmq
 uses these DNS names for node discovery during the clustering process
 - the ECS instances must be assigned the following IAM policies:
