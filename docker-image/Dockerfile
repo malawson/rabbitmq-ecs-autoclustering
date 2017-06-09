@@ -50,9 +50,6 @@ ENV RABBITMQ_LOGS=- RABBITMQ_SASL_LOGS=-
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 0A9AF2115F4687BD29803A206B73A36E6026DFCA
 RUN echo 'deb http://www.rabbitmq.com/debian testing main' > /etc/apt/sources.list.d/rabbitmq.list
 
-#ENV RABBITMQ_VERSION 3.6.6
-#ENV RABBITMQ_DEBIAN_VERSION 3.6.6*
-
 ENV RABBITMQ_VERSION 3.6*
 ENV RABBITMQ_DEBIAN_VERSION 3.6*
 
@@ -85,7 +82,7 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
 RUN rabbitmq-plugins enable --offline rabbitmq_management
 
-# add ASG auto clustering tool
+# add ASG-based rabbitmq auto clustering tool
 COPY rabbitmq_asg_autocluster.py /opt/
 RUN chmod 755 /opt/rabbitmq_asg_autocluster.py
 
