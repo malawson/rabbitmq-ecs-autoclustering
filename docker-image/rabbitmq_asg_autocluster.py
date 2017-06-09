@@ -244,6 +244,7 @@ def main():
     # to be safe, do cleanup only after the cluster is has been formed
     cleanup()
 
+    # reference: https://www.rabbitmq.com/ha.html
     # i.e. declaring policy "ha-all" that matches all queue names & configures mirroring to all nodes
     # using ${VHOST} environment variable
     # run('rabbitmqctl set_policy ha-all ".*" \'{"ha-mode":"all"}\' -p ${VHOST}')
