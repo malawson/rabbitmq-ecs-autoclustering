@@ -18,7 +18,7 @@ uses these DNS names for node discovery during the clustering process
 
 Deployment
 ----------
-Below are some main steps for building and deploying these auto clustering rabbitmq containers in ECS; adjust as you see fit.
+Below are some main steps for building and deploying these auto clustering rabbitmq docker images in ECS; adjust as you see fit.
 
 - IAM Policy for ECS Instances
 
