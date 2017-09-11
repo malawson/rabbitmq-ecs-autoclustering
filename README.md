@@ -50,7 +50,7 @@ Make sure the IAM policy for the ECS instances include these: "autoscaling:Descr
 ```
 
 
-- Build & push the container to the registry (ECR).
+- Build & push the docker image to the ECR registry.
 
 ```
     aws ecr get-login --region us-east-1
