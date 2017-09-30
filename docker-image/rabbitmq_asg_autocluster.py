@@ -200,7 +200,7 @@ def join_cluster():
     node_list = get_node_list()
 
     for node in node_list:
-        # strip string elements from any leading/trailing chars for comparison - it breaks otherwise
+        # strip string elements of any leading/trailing chars for comparison - it breaks otherwise
         if node.strip() != my_nodename.strip():
             # find a remote node with which to cluster in the ASG
             remote_node = node
