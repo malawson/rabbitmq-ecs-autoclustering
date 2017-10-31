@@ -197,7 +197,11 @@ rabbit_env_config() {
 				[ "$val" ] || continue
 				rawVal='"'"$val"'"'
 				;;
-
+				
+			vm_memory_high_watermark)
+				[ "$val" ] && rawVal=$val
+				;;
+				
 			*)
 				[ "$val" ] || continue
 				rawVal='<<"'"$val"'">>'
