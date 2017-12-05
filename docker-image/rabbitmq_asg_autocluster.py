@@ -241,7 +241,7 @@ def main():
     while not cluster_formed():
         join_cluster()
 
-    # to be safe, do cleanup only after the cluster is has been formed
+    # to be safe, do cleanup only after the cluster has been formed
     cleanup()
 
     # reference: https://www.rabbitmq.com/ha.html
