@@ -1,9 +1,9 @@
 #!/usr/bin/python 
 
 """
-Automation of Rabbitmq clustering in Amazon EC2 Container Service based on AWS Auto Scaling group membership.
+Automation of Rabbitmq clustering in Amazon EC2 Container Service based on AWS Spot Fleet membership.
 Requirements:
-    - the rabbitmq cluster is deployed within a single AWS Auto Scaling group
+    - the rabbitmq cluster is deployed within a single AWS Spot Fleet
     - use the 'host' docker networking mode to cause the containers to inherit the
     private short dns names of the ECS instances as their hostnames this way rabbitmq
     uses these DNS names for node discovery during the clustering process
@@ -17,6 +17,7 @@ Requirements:
 from subprocess import Popen, PIPE
 from time import sleep
 import re
+import os
 try:
     import boto3
 except ImportError:
@@ -25,8 +26,8 @@ except ImportError:
     import boto3
 
 # initialize boto client and ec2 resource
-client_asg = boto3.client('autoscaling', region_name='us-east-1')
-ec2 = boto3.resource('ec2', region_name='us-east-1')
+client_ec2 = boto3.client('ec2')
+ec2 = boto3.resource('ec2')
 
 def run(cmd):
     """
@@ -52,53 +53,50 @@ def get_instance_id():
 
     return str(instance_id)
 
-
-def get_asg_name():
+def get_spot_id():
     """
-    returns ASG name, type string
+    returns the Spot Fleet ID
     """
-    response = client_asg.describe_auto_scaling_instances(
+    response = client_ec2.describe_instances(
         InstanceIds=[
             get_instance_id(),
-        ]
+        ],
+        DryRun=False,
     )
-    asg_instance = response['AutoScalingInstances'][0]
-
-    return asg_instance['AutoScalingGroupName'] 
+    return response['Reservations'][0]['Instances'][0]['SpotInstanceRequestId']
 
 
-def get_asg_instance_ids():
+def get_instance_ids():
     """
-    returns a list object of InstanceIds corresponding to the healthy ASG nodes
+    returns a list object of InstanceIds corresponding to the healthy Spot Fleet nodes
     """
-    response = client_asg.describe_auto_scaling_groups(
-        AutoScalingGroupNames=[
-            get_asg_name(),
-        ]
+    response = client_ec2.describe_spot_fleet_instances(
+        DryRun=False,
+        MaxResults=200,
+        SpotFleetRequestId=get_spot_id()
     )
-    asg = response['AutoScalingGroups'][0]
-    asg_instances = asg['Instances']
-    asg_instance_ids = []
+    instances = response['ActiveInstances']
+    instance_ids = []
 
-    for instance in asg_instances:
+    for instance in instances:
         # cluster only instances that are in-service & healthy
-        if instance['LifecycleState'] == 'InService' and instance['HealthStatus'] == 'Healthy':
-            asg_instance_ids.append(instance['InstanceId'])
+        if instance['InstanceHealth'] == 'healthy':
+            instance_ids.append(instance['InstanceId'])
         else:
             print "Instance ", instance, " cannot be clustered\n"
             print "LifecycleState: ", instance['LifecycleState'], "\n", "HealthStatus: ", instance['HealthStatus']
 
-    return asg_instance_ids
+    return instance_ids
 
 
-def get_asg_instance_private_dnsnames():
+def get_instance_private_dnsnames():
     """
     returns a list object of the private dns names of the ASG's healthy nodes
     i.e. ['ip-10-200-22-148', 'ip-10-200-13-105', 'ip-10-200-2-39']
     """
 
     private_short_dnsnames = []
-    for instance_id in get_asg_instance_ids():
+    for instance_id in get_instance_ids():
         instance = ec2.Instance(instance_id)
         private_short_dnsnames.append(re.sub('.ec2.internal', '', instance.private_dns_name))
 
@@ -112,7 +110,7 @@ def get_node_list():
     """
 
     node_list = []
-    for hostname in get_asg_instance_private_dnsnames():
+    for hostname in get_instance_private_dnsnames():
         # build node list based on rabbitmqctl cluster_status format
         node_list.append('rabbit@' + hostname)
 

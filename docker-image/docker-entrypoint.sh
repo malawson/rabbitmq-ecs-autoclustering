@@ -2,7 +2,7 @@
 set -eux
 
 # autoclustering on? needs to run as root to install boto3, etc
-if [ "${AWS_ASG_AUTOCLUSTER}" == "true" ]; then
+if [ "${AWS_AUTOCLUSTER}" == "true" ]; then
 
 	if [ "${RABBITMQ_ERLANG_COOKIE:-}" ]; then
 		cookieFile='/var/lib/rabbitmq/.erlang.cookie'
@@ -14,10 +14,10 @@ if [ "${AWS_ASG_AUTOCLUSTER}" == "true" ]; then
 		exit 1
 	fi
 
-	echo -e " *** AWS_ASG_AUTOCLUSTER enabled ***\n "
+	echo -e " *** AWS_AUTOCLUSTER enabled ***\n "
 	python /opt/rabbitmq_asg_autocluster.py &
 else
-	echo -e " *** AWS_ASG_AUTOCLUSTER disabled - running in singleton mode ***\n "
+	echo -e " *** AWS_AUTOCLUSTER disabled - running in singleton mode ***\n "
 fi
 
 # allow the container to be started with `--user`
