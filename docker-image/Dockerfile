@@ -21,8 +21,8 @@ RUN set -x \
 # See:
 #  - http://www.erlang.org/download.html
 #  - https://www.erlang-solutions.com/resources/download.html
-RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 434975BD900CCBE4F7EE1B1ED208507CA14F4FCA
-RUN echo 'deb http://packages.erlang-solutions.com/debian jessie contrib' > /etc/apt/sources.list.d/erlang.list
+RUN wget https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc && apt-key add erlang_solutions.asc
+RUN echo 'deb http://packages.erlang-solutions.com/ubuntu bionic contrib' > /etc/apt/sources.list.d/erlang.list
 
 # install Erlang
 RUN apt-get update \
