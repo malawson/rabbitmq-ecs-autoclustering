@@ -19,7 +19,7 @@ phases:
 
   build:
     commands:
-      - docker build -t rabbitmq-ecs-autoclustering:$CODEBUILD_SOURCE_VERSION .
+      - cd docker-image && docker build -t rabbitmq-ecs-autoclustering:$CODEBUILD_SOURCE_VERSION .
 
   post_build:
     commands:

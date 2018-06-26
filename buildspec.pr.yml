@@ -20,4 +20,4 @@ phases:
   
   build:
     commands:
-      - cd docker-image && docker build -t pa-api-gateway .
+      - cd docker-image && docker build -t rabbitmq-ecs-autoclustering .
