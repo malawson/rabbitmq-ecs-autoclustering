@@ -1,0 +1,27 @@
+# Build instructions for Github Releases:
+#   - runs node modules security scan
+#   - runs build
+#   - pushes artifacts
+
+version: 0.2
+
+env:
+  variables:
+    ECR_REPO_URL: 150026130887.dkr.ecr.us-east-1.amazonaws.com/rabbitmq-ecs-autoclustering
+  parameter-store:
+    SSH_KEY: /secrets/ops/us-east-1/build-pipelines/shared/docker_rsa
+
+phases:
+
+  pre_build:
+    commands:
+      - $(aws ecr get-login --no-include-email)
+
+  build:
+    commands:
+      - cd docker-image && docker build -t rabbitmq-ecs-autoclustering:$CODEBUILD_SOURCE_VERSION .
+
+  post_build:
+    commands:
+      - docker tag rabbitmq-ecs-autoclustering:$CODEBUILD_SOURCE_VERSION $ECR_REPO_URL:$CODEBUILD_SOURCE_VERSION
+      - docker push $ECR_REPO_URL:$CODEBUILD_SOURCE_VERSION

@@ -1,0 +1,23 @@
+
+# Build instructions for Pull Requests:
+#   - runs linter
+#   - runs dependency vulnerability scan
+#   - runs full test suite
+#   - runs build
+#   - DOES NOT PUSH ARTIFACTS
+
+version: 0.2
+
+env:
+  parameter-store:
+    ARTIFACT_BUCKET: /secrets/ops/us-east-1/build-pipelines/shared/artifact_bucket
+    SSH_KEY: /secrets/ops/us-east-1/build-pipelines/shared/docker_rsa
+
+phases:
+  install:
+    commands:
+      - $(aws ecr get-login --no-include-email)
+  
+  build:
+    commands:
+      - cd docker-image && docker build -t rabbitmq-ecs-autoclustering .

@@ -1,0 +1,90 @@
+[
+  {
+    "name": "${name}",
+    "image": "${image}",
+    "essential": true,
+    "cpu": ${cpu},
+    "memoryReservation": ${memory},
+    "networkmode": "host",
+    "readonlyrootfilesystem": "false",
+    "privileged": "true",
+    "portMappings": [
+      {
+        "containerPort": 5672,
+        "hostPort": 5672
+      },
+      {
+        "containerPort": 15672,
+        "hostPort": 15672
+      },
+      {
+        "containerPort": 4369,
+        "hostPort": 4369
+      },
+      {
+        "containerPort": 25672,
+        "hostPort": 25672
+      }
+    ],
+    "environment": [
+      {
+        "name": "AWS_DEFAULT_REGION",
+        "value": "${region}"
+      },
+      {
+          "name": "RABBITMQ_DEFAULT_VHOST",
+          "value": "vhost"
+      },
+      {
+          "name": "RABBITMQ_DEFAULT_USER",
+          "value": "guest"
+      },
+      {
+          "name": "RABBITMQ_DEFAULT_PASS",
+          "value": "${password}"
+      },
+      {
+          "name": "RABBITMQ_DEFAULT_PORT",
+          "value": 5672
+      },
+      {
+          "name": "RABBITMQ_VM_MEMORY_HIGH_WATERMARK",
+          "value": 0.85
+      },
+      {
+          "name": "AWS_AUTOCLUSTER",
+          "value": 'true'
+      },
+      {
+          "name": "RABBITMQ_ERLANG_COOKIE",
+          "value": "${erlang_cookie}"
+      },
+      {
+          "name": "RABBITMQ_QUEUE_MASTER_LOCATOR"
+          "value": "min-masters"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group_name}",
+        "awslogs-region": "${region}"
+      }
+    },
+    "ulimits": [
+        {
+            "Name": "nofile",
+            "SoftLimit": 10240,
+            "HardLimit": 32768
+        }
+    ],
+    "volumes": [
+        {
+        "name": "rabbitmq-database",
+        "host": {
+            "sourcePath": "/var/lib/rabbitmq-asg-autocluster"
+        }
+        }
+    ]
+  }
+]
